@@ -173,7 +173,7 @@ class Photo(IKModel):
         verbose_name_plural = _("photos")
         
     class IKConfig:
-        spec_module = 'photologue.ikconfig'
+        spec_module = 'photologue.specs'
         save_count_as = 'view_count'
         cache_dir = 'photologue'
 

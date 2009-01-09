@@ -1,4 +1,4 @@
-""" Default ImageKit configuration """
+""" Default Photologue image specifications """
 
 from imagekit.specs import ImageSpec
 from imagekit import processors
