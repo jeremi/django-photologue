@@ -9,7 +9,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from imagekit.models import IKModel
+from imagekit.models import ImageModel
 from imagekit.lib import Image
 
 
@@ -140,7 +140,7 @@ class GalleryUpload(models.Model):
             return gallery
 
 
-class Photo(IKModel):
+class Photo(ImageModel):
     crop_horz_choices = (
         (0, 'left'),
         (1, 'center'),
@@ -176,6 +176,7 @@ class Photo(IKModel):
         spec_module = 'photologue.specs'
         save_count_as = 'view_count'
         cache_dir = 'photologue'
+        cache_filename_format = "%(specname)s/%(filename)s.%(extension)s"
 
     def __unicode__(self):
         return self.title
