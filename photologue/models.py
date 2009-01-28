@@ -3,6 +3,7 @@ import random
 import zipfile
 
 from datetime import datetime
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -11,6 +12,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from imagekit.models import ImageModel
 from imagekit.lib import Image
+
+
+# Modify image file buffer size.
+PHOTOLOGUE_SPEC_MODULE = getattr(settings, 'PHOTOLOGUE_SPEC_MODULE', 'photologue.specs')
 
 
 class Gallery(models.Model):
@@ -173,7 +178,7 @@ class Photo(ImageModel):
         verbose_name_plural = _("photos")
         
     class IKOptions:
-        spec_module = 'photologue.specs'
+        spec_module = PHOTOLOGUE_SPEC_MODULE
         save_count_as = 'view_count'
         cache_dir = 'photologue'
         cache_filename_format = "%(specname)s/%(filename)s.%(extension)s"
