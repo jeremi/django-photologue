@@ -5,6 +5,7 @@ import zipfile
 from datetime import datetime
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -16,6 +17,10 @@ from imagekit.lib import Image
 
 # Modify image file buffer size.
 PHOTOLOGUE_SPEC_MODULE = getattr(settings, 'PHOTOLOGUE_SPEC_MODULE', 'photologue.specs')
+
+# File storage class for gallery uploads in case default storage is et to S3 or
+# some other alternate method.
+tmp_storage = FileSystemStorage(location='/tmp')
 
 
 class Gallery(models.Model):
@@ -73,7 +78,7 @@ class Gallery(models.Model):
 
 
 class GalleryUpload(models.Model):
-    zip_file = models.FileField(_('images file (.zip)'), upload_to="tmp",
+    zip_file = models.FileField(_('images file (.zip)'), storage=tmp_storage,
                                 help_text=_('Select a .zip file of images to upload into a new Gallery.'))
     gallery = models.ForeignKey(Gallery, null=True, blank=True, help_text=_('Select a gallery to add these images to. leave this empty to create a new gallery from the supplied title.'))
     title = models.CharField(_('title'), max_length=75, help_text=_('All photos in the gallery will be given a title made up of the gallery title + a sequential number.'))
