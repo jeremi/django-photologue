@@ -17,6 +17,7 @@ from imagekit.lib import Image
 
 # Modify image file buffer size.
 PHOTOLOGUE_SPEC_MODULE = getattr(settings, 'PHOTOLOGUE_SPEC_MODULE', 'photologue.specs')
+PHOTOLOGUE_PREPROCESSOR_MODULE = getattr(settings, 'PHOTOLOGUE_PREPROCESSOR_MODULE', None)
 
 
 class Gallery(models.Model):
@@ -166,13 +167,14 @@ class Photo(ImageModel):
     crop_vert = models.PositiveIntegerField(_('crop vertical'),
                                             choices=crop_vert_choices,
                                             default=1)
-    title = models.CharField(_('title'), max_length=100, unique=True)
+    title = models.CharField(_('title'), max_length=100)
     title_slug = models.SlugField(_('slug'), unique=True,
                                   help_text=('A "slug" is a unique URL-friendly title for an object.'))
     caption = models.TextField(_('caption'), blank=True)
     date_added = models.DateTimeField(_('date added'), default=datetime.now, editable=False)
     view_count = models.PositiveIntegerField(default=0, editable=False)
     is_public = models.BooleanField(_('is public'), default=True, help_text=_('Public photographs will be displayed in the default views.'))
+    position = models.IntegerField(_("position"), blank=True, null=True)
 
     class Meta:
         ordering = ['-date_added']
@@ -185,6 +187,7 @@ class Photo(ImageModel):
         save_count_as = 'view_count'
         cache_dir = 'photologue'
         cache_filename_format = "%(specname)s/%(filename)s.%(extension)s"
+        preprocessor_spec = PHOTOLOGUE_PREPROCESSOR_MODULE
 
     def __unicode__(self):
         return self.title
@@ -194,7 +197,7 @@ class Photo(ImageModel):
 
     def save(self, *args, **kwargs):
         if self.title_slug is None:
-            self.title_slug = slugify(self.title)
+            self.title_slug = slugify(self.title)[0:50]
         super(Photo, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
